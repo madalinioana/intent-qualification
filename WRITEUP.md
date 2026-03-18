@@ -132,7 +132,7 @@ Structured fields precum employee_count si revenue sunt exacte cand exista, dar 
 
 ## Scaling
 
-### La 100,000 companii
+### La 100000 companii
 
 Pentru embedding as folosi un vector database precum FAISS sau Pinecone pentru approximate nearest neighbor search. Query time scade de la O(N) la O(log N). Embeddings-urile ar trebui calculate o singura data la ingestion si stocate, nu calculate la query time.
 

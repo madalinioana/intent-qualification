@@ -1,4 +1,4 @@
-# Intent Qualification System
+# Intent Qualification
 
 Quick setup and run instructions.
 
