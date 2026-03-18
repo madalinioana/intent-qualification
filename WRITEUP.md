@@ -4,7 +4,7 @@ Mădălin Ioana, 2026
 
 ## Problem
 
-A trebuit sa construiesc un sistem care primeste un query in limbaj natural si returneaza companiile din dataset care se potrivesc cel mai bine cu cererea utilizatorului.
+A trebuit sa construiesc un sistem care primeste un query in limbaj natural si returneaza companiile din dataset care se potrivesc cel mai bine cu cererea userului.
 
 De exemplu, pentru query-ul "pharmaceutical companies in Switzerland with over 500 employees", sistemul ar putea returna:
 - O firma de pharma din Basel cu 2000+ angajati, care este un match clar
