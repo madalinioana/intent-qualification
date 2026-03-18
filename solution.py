@@ -16,6 +16,8 @@ if not GROQ_API_KEY:
 
 QUERIES = [
     "Clean energy startups founded after 2018 with fewer than 200 employees",
+    "E-commerce companies using Shopify or similar platforms",
+    "Companies that manufacture or supply critical components for electric vehicle battery production",
 ]
 
 TOP_N_CONFIG = {
