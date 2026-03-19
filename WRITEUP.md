@@ -38,7 +38,7 @@ Pentru geografie, campul address din dataset e un dict cu country_code (de exemp
 
 Pentru date lipsa, am decis ca valorile NaN sa treaca prin filtru. Daca o companie nu are employee_count, nu o elimin atunci cand filtrez pentru "1000+ employees". Am facut aceasta alegere deoarece prefer sa am false positives pe care LLM-ul le poate corecta, decat false negatives pe care le pierd definitiv.
 
-Daca hard filter-ul elimina tot, fac fallback la dataset-ul complet. Un pool mai zgomotos e preferabil fata de zero rezultate.
+Daca hard filter-ul elimina tot, fac fallback la dataset-ul complet. Prefer un pool mai zgomotos decat zero rezultate.
 
 ### Embedding Ranker
 
