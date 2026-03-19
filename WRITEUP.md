@@ -80,7 +80,7 @@ Am optimizat pentru acuratete si recall, acceptand un cost LLM mai mare decat mi
 |---------|-------|------|
 | NaN passthrough in hard filter | Datele lipsa nu duc la descalificare | Ajung candidati irelevanti la LLM |
 | all-MiniLM-L6-v2 local | Rapid, gratis si suficient pentru 477 companii | Intelegere semantica mai slaba decat modele mari |
-| Single batch LLM call | Aproximativ 25x mai ieftin decat per-company | Context window limiteaza batch size |
+| Single batch LLM call | Aproximativ 25x mai ieftin decat per companie | Context window limiteaza batch size |
 | TOP_N intre 15 si 25 | Prinde cazuri la limita | Mai multi tokens per call |
 | temperature=0 | Rezultate deterministe | Niciun dezavantaj pentru acest use case |
 
