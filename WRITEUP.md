@@ -7,9 +7,9 @@ Mădălin Ioana, 2026
 A trebuit sa construiesc un sistem care primeste un query in limbaj natural si returneaza companiile din dataset care se potrivesc cel mai bine cu cererea userului.
 
 De exemplu, pentru query-ul "pharmaceutical companies in Switzerland with over 500 employees", sistemul ar putea returna:
-- O firma de pharma din Basel cu 2000+ angajati, care este un match clar
-- O firma elvetiana de biotech cu 600 angajati care face research, care este un caz discutabil
-- O firma franceza de pharma cu departament R&D langa Geneva, care probabil nu ar trebui inclusa
+- o firma de pharma din Basel cu 2000+ angajati, care este un match clar
+- o firma elvetiana de biotech cu 600 angajati care face research, care este un caz discutabil
+- o firma franceza de pharma cu departament R&D langa Geneva, care probabil nu ar trebui inclusa
 
 Provocarea principala a fost sa diferentiez intre keyword match si intent match. Doua companii pot avea "logistics" in descriere, dar una face transport efectiv si alta vinde software. Similaritatea semantica nu e suficienta, a trebuit inteles ce face compania in practica si daca activitatea ei corespunde cu ce cauta utilizatorul.
 
@@ -182,11 +182,9 @@ Periodic as rula LLM-ul pe companii random din afara top 25 pentru a verifica fa
 
 Daca as continua dezvoltarea, in ordinea prioritatii:
 
-* as adauga BM25 combinat cu embedding pentru a prinde exact keyword matches pe care embedding-ul le poate generaliza prea mult.
-
-* as extrage explicit rolul de business (Supplier, Customer, Competitor) in parser pentru a clarifica directia la ecosystem queries.
-
-* as adauga confidence scores per criteriu din LLM pentru debugging si explainability.
+- as adauga BM25 combinat cu embedding pentru a prinde exact keyword matches pe care embedding-ul le poate generaliza prea mult.
+- as extrage explicit rolul de business (Supplier, Customer, Competitor) in parser pentru a clarifica directia la ecosystem queries.
+- as adauga confidence scores per criteriu din LLM pentru debugging si explainability.
 
 Pentru confidentialitatea datelor, Llama poate rula local in loc de Groq API. Datele de companii nu ar mai parasi infrastructura proprie.
 
