@@ -94,7 +94,7 @@ Am presupus ca address contine country_code. Filtrarea geografica se bazeaza pe 
 
 Am presupus ca query-urile sunt in engleza. Intent parser-ul si semantic_intent sunt optimizate pentru engleza.
 
-Am presupus ca query-urile cer liste de companii, nu o singura companie. Sistemul nu suporta explicit query-uri de tipul "cea mai mare companie din Romania" sau "top 3 firme de software". Trateaza aceste query-uri ca si cum ar cere toate companiile care se potrivesc, nu doar primele N.
+Am presupus ca query-urile cer liste de companii, nu o singura companie. Sistemul nu suporta explicit query-uri de tipul "cea mai mare companie din Romania" sau "top 3 firme de software". Trateaza aceste query-uri ca si cum ar cere toate companiile care se potrivesc, nu doar primele N. Pentru a imbunatati, as putea modifica IntentParser-ul sa extraga si chei de tipul {"sort_by": "revenue", "order": "desc", "limit": 1}
 
 ### Date lipsa
 
