@@ -44,7 +44,7 @@ Daca hard filter-ul elimina tot, fac fallback la dataset-ul complet. Prefer un p
 
 Dupa hard filter raman intre 30 si 200 de companii. Le rankez folosind all-MiniLM-L6-v2 care ruleaza local pe CPU.
 
-Pentru fiecare companie construiesc un text compozit din nume, descriere, core_offerings, target_markets, business_model, NAICS label si adresa. Calculez embedding-ul pentru acest text si pentru semantic_intent, apoi sortez dupa cosine similarity.
+Pentru fiecare companie construiesc un string din nume, descriere, core_offerings, target_markets, business_model, NAICS label si adresa. Calculez embedding-ul pentru acest text si pentru semantic_intent, apoi sortez dupa cosine similarity.
 
 Pastrez top 15-25 candidati in functie de query_type: 15 pentru structured deoarece filtrele au facut deja selectia principala, 20 pentru semantic si 25 pentru ecosystem deoarece acesta e cel mai greu de rankat corect.
 
