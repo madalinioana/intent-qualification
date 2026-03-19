@@ -88,7 +88,7 @@ Am optimizat pentru acuratete si recall, acceptand un cost LLM mai mare decat mi
 
 Am presupus ca NAICS codes sunt corecte. Ma bazez pe industry_naics ca ground truth pentru industrie, iar daca o companie pharma e clasificata gresit ca software, LLM-ul ar putea sa nu detecteze eroarea. In realitate unele companii au NAICS generic (541500, Computer Systems Design) care nu diferentiaza intre consultanta si product company.
 
-Am presupus ca descrierea e suficient de detaliata. LLM classifier-ul infereaza totul din descriere, iar daca o companie are doar doua propozitii vagi, sistemul nu poate face reasoning complet.
+Am presupus ca descrierea si detaliile de business sunt suficient de detaliate. LLM classifier-ul infereaza din aceste campuri, iar daca o companie are doar doua propozitii vagi la descriere, sistemul nu poate face reasoning complet.
 
 Am presupus ca address contine country_code. Filtrarea geografica se bazeaza pe coduri ISO, iar daca address e null compania e exclusa de la query-uri geografice.
 
