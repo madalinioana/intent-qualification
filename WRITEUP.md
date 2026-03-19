@@ -90,15 +90,13 @@ Am presupus ca NAICS codes sunt corecte. Ma bazez pe industry_naics ca ground tr
 
 Am presupus ca descrierea si detaliile de business sunt suficient de detaliate. LLM classifier-ul infereaza din aceste campuri, iar daca o companie are doar doua propozitii vagi la descriere, sistemul nu poate face reasoning complet.
 
-Am presupus ca address contine country_code. Filtrarea geografica se bazeaza pe coduri ISO, iar daca address e null compania e exclusa de la query-uri geografice.
-
 Am presupus ca query-urile sunt in engleza. Intent parser-ul si semantic_intent sunt optimizate pentru engleza.
 
 Am presupus ca query-urile cer liste de companii, nu o singura companie. Sistemul nu suporta explicit query-uri de tipul "cea mai mare companie din Romania" sau "top 3 firme de software". Trateaza aceste query-uri ca si cum ar cere toate companiile care se potrivesc, nu doar primele N. Pentru a imbunatati, as putea modifica IntentParser-ul sa extraga si chei de tipul {"sort_by": "revenue", "order": "desc", "limit": 1}
 
 ### Date lipsa
 
-Sistemul e destul de robust, employee_count null trece filtrul numeric, revenue null trece filtrul numeric, is_public null trece filtrul boolean, description null inseamna embedding mai slab, dar NAICS si numele ajuta partial, address null inseamna excludere de la query-uri geografice (aici pierd recall).
+Sistemul e destul de robust, employee_count null trece filtrul numeric, revenue null trece filtrul numeric, is_public null trece filtrul boolean, description null inseamna embedding mai slab, dar NAICS si numele ajuta partial.
 
 Aproximativ 30% din companii au employee_count null si 40% au revenue null. Decizia de NaN passthrough previne eliminarea lor prematura.
 
@@ -106,7 +104,7 @@ Aproximativ 30% din companii au employee_count null si 40% au revenue null. Deci
 
 ### Cazuri in care performeaza bine
 
-Pe query-uri structurate cu geografie sistemul are rata de succes foarte mare: "Logistic companies in Romania", "Pharmaceutical companies in Switzerland", "Construction companies in US with revenue peste 50M". Hard filter-ul reduce dramatic numarul de candidati, embedding-ul ii ordoneaza corect, iar LLM-ul face decizia finala.
+Pe query-uri structurate cu geografie sistemul are rata de succes foarte mare: "Logistic companies in Romania", "Pharmaceutical companies in Switzerland", "Construction companies in US". Hard filter-ul reduce mult numarul de candidati, embedding-ul ii ordoneaza corect, iar LLM-ul face decizia finala.
 
 La role disambiguation sistemul diferentiaza corect intre logistics operators (freight forwarding, transport) care sunt match, logistics software providers care nu sunt match si logistics consultants care nu sunt match. LLM classifier-ul cu business_model si NAICS face diferenta.
 
@@ -114,13 +112,13 @@ La regiuni geografice precum "Scandinavia", "Europe" sau "Balkans" mapping-ul pe
 
 ### Limitari
 
-La query-uri despre supply chain sau furnizori embedding-ul poate avea probleme. De exemplu, pentru un query despre furnizori de componente auto, embedding-ul poate ranka mai sus producatorii de masini decat producatorii de componente. Motivul e ca producatorii de masini vorbesc foarte mult in descrieri despre componentele pe care le folosesc ("advanced battery systems", "premium interior materials"), in timp ce furnizorii de componente au descrieri mai tehnice si mai putin apropiate semantic de produsul final. Am rezolvat partial prin formularea semantic_intent-ului sa descrie furnizorul, nu clientul, si prin TOP_N mai mare (25) pentru ecosystem queries.
+La query-uri despre supply chain sau furnizori embedding-ul poate avea probleme. De exemplu, pentru un query despre furnizori de componente auto, embedding-ul poate ranka mai sus producatorii de masini decat producatorii de componente. Motivul e ca producatorii de masini vorbesc foarte mult in descrieri despre componentele pe care le folosesc ("advanced battery systems", "premium interior materials"), in timp ce furnizorii de componente au descrieri mai tehnice si mai putin apropiate semantic de produsul final. Am rezolvat partial prin formularea semantic_intent-ului sa descrie furnizorul, nu clientul si prin TOP_N mai mare (25) pentru ecosystem queries.
 
 La query-uri vagi precum "fast-growing fintech" sistemul se bazeaza pe inferenta din founding year recent si limbaj in descriere, ceea ce e mai putin de incredere decat filtrarea structurata.
 
 La companii cu date aproape lipsa, daca o companie care ar fi match perfect are description null, employee_count null si NAICS generic, sistemul o poate rata complet.
 
-Un exemplu concret de misclassification ar fi pentru query-ul "automotive manufacturers founded before 2000" in care sistemul poate returna gresit suppliers de componente auto. Motivul e ca descrierile lor contin termeni precum "vehicle systems", "automotive engineering", "transportation solutions" care sunt semantic apropiate de manufacturing propriu-zis. Hard filter-ul le pastreaza (sunt fondate inainte de 2000), embedding-ul le pune sus (limbaj automotive), iar LLM-ul trebuie sa se bazeze pe NAICS (336300 vs 336100) si pe business_model pentru a le diferentia. Daca NAICS lipseste sau business_model e vag, trec ca manufacturers.
+Un exemplu concret de misclassification ar fi pentru query-ul "automotive manufacturers founded before 2000" in care sistemul poate returna gresit suppliers de componente auto. Motivul e ca descrierile lor contin termeni precum "vehicle systems", "automotive engineering", "transportation solutions" care sunt semantic apropiate de manufacturing propriu-zis. Hard filter-ul le pastreaza (sunt fondate inainte de 2000), embedding-ul le pune sus (limbaj automotive), iar LLM-ul trebuie sa se bazeze pe NAICS (336300 vs 336100) si pe business_model pentru a le diferentia. Daca NAICS lipsesc sau business_model e vag, trec ca manufacturers.
 
 ### Semnalele pe care se bazeaza
 
@@ -138,7 +136,7 @@ Pentru embedding as folosi un vector database precum FAISS sau Pinecone pentru a
 
 Pentru hard filter as adauga structured indexes: hash map pe country_code, array-uri sortate pentru employee_count si revenue (binary search), bitmap pentru is_public.
 
-As adauga un cross-encoder reranker intre embedding si LLM. Cross-encoder e mai exact decat bi-encoder similarity dar mult mai ieftin decat LLM. Ar reduce 100 candidati la 20 inainte de LLM classifier.
+As adauga un cross-encoder reranker intre embedding si LLM. Cross-encoder e mai exact decat bi-encoder similarity, dar mult mai ieftin decat LLM. Ar reduce 100 candidati la 20 inainte de LLM classifier.
 
 ### La milioane de companii
 
@@ -146,11 +144,11 @@ La atat de multe companii problemele sunt diferite.
 
 Nu mai merge pe un singur server, ai nevoie de vector DB distribuit si database sharded pe mai multe masini.
 
-As face sharding geografic astfel incat "Companies in Romania" sa caute doar in shard-ul Europa, nu in toti cei 10M.
+As face sharding geografic astfel incat "Companies in Romania" sa caute doar in shard-ul Europa, nu in toate milioanele de companii.
 
 Embeddings pentru 10M companii ar dura aproximativ 160 minute pe CPU, deci ar fi nevoie de un batch job care ruleaza nightly pe GPUs.
 
-La traffic mare costul LLM devine semnificativ. As folosi model mai mic pentru parsing (Llama-3.1-8b), caching agresiv pentru query patterns comune si mai multi provideri cu failover.
+La traffic mare costul LLM devine semnificativ. As folosi un model mai mic pentru parsing, caching agresiv pentru query patterns comune si mai multi provideri cu failover.
 
 La 477 companii pot valida manual rezultatele. La milioane am nevoie de metrici calculate automat (NDCG, precision@k pe sample-uri). Fara monitorizare automata nu am cum sa stiu daca o schimbare imbunatateste sau degradeaza rezultatele.
 
@@ -158,7 +156,7 @@ La 477 companii pot valida manual rezultatele. La milioane am nevoie de metrici 
 
 ### Erori cu scor mare
 
-Daca NAICS lipseste sau e gresit, o companie pharma cu o descriere apropiata de domeniul software ("digital platform", "cloud systems") poate trece ca software company cu scor mare.
+Daca NAICS lipsesc sau sunt gresite, o companie pharma cu o descriere apropiata de domeniul software ("digital platform", "cloud systems") poate trece ca software company cu scor mare.
 
 Daca datele sunt outdated, o companie cu employee_count 150 din 2020, dar care acum are 2000, pica filtrul de "1000+ employees" desi ar fi match.
 
@@ -178,17 +176,17 @@ Daca toti candidatii au similarity sub 0.2, semantic_intent e slab formulat sau 
 
 Daca toti candidatii primesc scor 100 de la LLM, prompt-ul nu discrimineaza suficient. Daca toti primesc sub 50, posibil query-ul nu are match-uri reale.
 
-Periodic as rula LLM-ul pe companii random din afara top-25 pentru a verifica false negatives. Daca gasesc companii cu scor mare acolo, embedding-ul rateaza ceva sistematic.
+Periodic as rula LLM-ul pe companii random din afara top 25 pentru a verifica false negatives. Daca gasesc companii cu scor mare acolo, embedding-ul rateaza ceva sistematic.
 
 ## Priority Improvements
 
 Daca as continua dezvoltarea, in ordinea prioritatii:
 
-As adauga BM25 combinat cu embedding pentru a prinde exact keyword matches pe care embedding-ul le poate generaliza prea mult.
+* as adauga BM25 combinat cu embedding pentru a prinde exact keyword matches pe care embedding-ul le poate generaliza prea mult.
 
-As extrage explicit rolul de business (Supplier, Customer, Competitor) in parser pentru a clarifica directia la ecosystem queries.
+* as extrage explicit rolul de business (Supplier, Customer, Competitor) in parser pentru a clarifica directia la ecosystem queries.
 
-As adauga confidence scores per criteriu din LLM pentru debugging si explainability.
+* as adauga confidence scores per criteriu din LLM pentru debugging si explainability.
 
 Pentru confidentialitatea datelor, Llama poate rula local in loc de Groq API. Datele de companii nu ar mai parasi infrastructura proprie.
 
